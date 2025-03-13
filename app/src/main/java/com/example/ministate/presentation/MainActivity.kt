@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.ministate.common.TestFunctions
+import com.example.ministate.data.remote.repository.EventRepositoryImpl
 import com.example.ministate.presentation.ui.theme.MiniStateTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,16 +18,6 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        val testFunctions = TestFunctions(this)
-
-        CoroutineScope(Dispatchers.IO).launch {
-//            testFunctions.testEventRepositoryGetEventCatagories()
-            testFunctions.testEventRepositoryGetEventDetailsList()
-
-        }
-
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -41,6 +32,16 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+
+        val testFunctions = TestFunctions(this)
+
+        CoroutineScope(Dispatchers.Main).launch {
+//            run any test functions here to confirm that api calls are working
+
+            testFunctions.testEventRepositoryGetEventCatagories()
+            testFunctions.testEventRepositoryGetEventDetailsList()
+
         }
     }
 }
