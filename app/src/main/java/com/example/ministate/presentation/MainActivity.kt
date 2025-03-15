@@ -18,6 +18,8 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val viewModel = EventViewModel(application = application)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -34,15 +36,15 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        val testFunctions = TestFunctions(this)
-
-        CoroutineScope(Dispatchers.Main).launch {
+//        val testFunctions = TestFunctions(this)
+//
+//        CoroutineScope(Dispatchers.Main).launch {
 //            run any test functions here to confirm that api calls are working
-
-            testFunctions.testEventRepositoryGetEventCatagories()
-            testFunctions.testEventRepositoryGetEventDetailsList()
-
-        }
+//
+//            testFunctions.testEventRepositoryGetEventCatagories()
+//            testFunctions.testEventRepositoryGetEventDetailsList()
+//
+//        }
     }
 }
 

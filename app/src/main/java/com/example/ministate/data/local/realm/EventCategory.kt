@@ -3,7 +3,7 @@ package com.example.ministate.data.local.realm
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
-class EventCatagory: RealmObject {
+class EventCategory: RealmObject {
     @PrimaryKey
     var id: String = ""
     var long_title: String = ""
