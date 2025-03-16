@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -16,8 +15,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ministate.presentation.ui.theme.MiniStateTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,7 +54,8 @@ class MainActivity : ComponentActivity() {
             composable("event_category_screen") {
                 EventCatagoryScreen(
                     onClick = {category -> navController.navigate("events/${category}")},
-                    categories = viewModel.state.collectAsState().value.eventCategories
+                    categories = viewModel.state.collectAsState().value.eventCategories,
+                    onRefresh = viewModel::onRefresh
                 )
             }
             composable("events/{category}") { it ->
@@ -65,9 +63,11 @@ class MainActivity : ComponentActivity() {
 
                 EventListScreen(
                     event = viewModel.state.collectAsState().value.eventList,
-                    category = category,
-                    onClick = { it -> navController.navigate("events/${category}/${it}") }
-                )
+                    categoryId = category,
+                    onClick = { it -> navController.navigate("events/${category}/${it}") },
+                    onRefresh = viewModel::onRefreshEvents,
+                    getCategory = viewModel::getEventCategoryById
+                    )
             }
 
             composable("events/{category}/{event_id}") {it->

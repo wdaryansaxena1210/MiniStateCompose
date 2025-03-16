@@ -2,6 +2,7 @@ package com.example.ministate.presentation
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,37 +19,66 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.ministate.data.local.realm.Event
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventListScreen(event: List<Event>?, category: String, onClick : (String) -> Unit) {
+fun EventListScreen(
+    event: List<Event>?,
+    categoryId: String,
+    onClick: (String) -> Unit,
+    onRefresh: (MutableState<Boolean>) -> Unit,
+    getCategory: (String) -> String
+) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = category) })
+            TopAppBar(title = { Text(text = getCategory(categoryId)) })
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(8.dp)
+
+        val refreshState = rememberPullToRefreshState()
+        val isRefreshing = remember { mutableStateOf(false) }
+
+        PullToRefreshBox(
+            isRefreshing = isRefreshing.value,
+            onRefresh = { onRefresh(isRefreshing) },
+            state = refreshState,
         ) {
-            event?.let {
-                items(it) { event ->
-                    if(event.category == category)
-                        EventCard(event, onClick)
+
+            if(isRefreshing.value){
+                Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start) {
+                    Text("loading")
+                }
+            }
+            else{
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(8.dp)
+                ) {
+                    event?.let {
+                        items(it) { event ->
+                            if (event.category == categoryId)
+                                EventCard(event, onClick)
+                            }
+                        }
+                    }
                 }
             }
         }
     }
-}
 
 @Composable
 fun EventCard(event: Event, onClick: (String) -> Unit) {
@@ -85,6 +115,8 @@ fun EventCard(event: Event, onClick: (String) -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
+
+
         }
     }
 }
