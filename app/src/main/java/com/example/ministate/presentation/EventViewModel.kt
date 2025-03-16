@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 
 class EventViewModel(application: Application) : AndroidViewModel(application) {
 
+
     //Dependencies
     private val eventRepository = EventRepositoryImpl(application)
 
@@ -54,6 +55,13 @@ class EventViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
+
+        println("get element 55549 = " + getEventById("55549"))
+    }
+
+    fun getEventById(eventId: String): Event? {
+
+        return eventRepository.getEventById(eventId)
     }
 }
 

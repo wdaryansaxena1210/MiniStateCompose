@@ -188,5 +188,10 @@ class EventRepositoryImpl(context: Context) : EventRepository {
     fun deleteAll(){
         realm.writeBlocking { deleteAll() }
     }
+
+    fun getEventById(eventId: String?): Event? {
+        println("getting id $eventId")
+        return realm.query<Event>("id=$0", eventId).find().firstOrNull()
+    }
 }
 

@@ -8,18 +8,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.navigation.Navigation
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.ministate.common.TestFunctions
-import com.example.ministate.data.remote.repository.EventRepositoryImpl
 import com.example.ministate.presentation.ui.theme.MiniStateTheme
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,8 +30,8 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(
                         modifier = Modifier
-                            .padding(innerPadding)
                             .fillMaxSize()
+                            .padding(innerPadding)
                     ) {
                         Navigation(viewModel)
                     }
@@ -55,12 +53,32 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun Navigation(viewModel: EventViewModel) {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = "event_catagory_screen") {
-            composable("event_catagory_screen") {
+        NavHost(navController = navController, startDestination = "event_category_screen") {
+            composable("event_category_screen") {
                 EventCatagoryScreen(
-                    onClick = { println("navigate to $it")},
-
+                    onClick = {category -> navController.navigate("events/${category}")},
+                    categories = viewModel.state.collectAsState().value.eventCategories
                 )
+            }
+            composable("events/{category}") { it ->
+                val category = it.arguments?.getString("category")?: "no category"
+
+                EventListScreen(
+                    event = viewModel.state.collectAsState().value.eventList,
+                    category = category,
+                    onClick = { it -> navController.navigate("events/${category}/${it}") }
+                )
+            }
+
+            composable("events/{category}/{event_id}") {it->
+                println("inside event/cat/id")
+                val eventId = it.arguments?.getString("event_id")
+                val event = eventId?.let { it1 -> viewModel.getEventById(it1) }
+                println("before calling event screen : event = $event")
+
+                event?.let {
+                    EventScreen(it)
+                }
             }
         }
     }
