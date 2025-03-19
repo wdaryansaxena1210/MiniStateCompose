@@ -18,7 +18,10 @@ class CategoryListAdapter(private val categoryList : List<EventCategory>, val fr
         fun bind(category: EventCategory) {
              binding.tvCategoryName.setText(category.short_title)
             binding.cvCategoryCard.setOnClickListener{
-                val eventListFragment = EventListFragment().apply { arguments= Bundle().apply { putString("category", category.id) } }
+                val eventListFragment = EventListFragment().apply {
+                    arguments= Bundle().apply { putString("category", category.id) }
+
+                }
 
                 println("event list fragment made. navigating to fragment")
                 fragmentManager.beginTransaction()

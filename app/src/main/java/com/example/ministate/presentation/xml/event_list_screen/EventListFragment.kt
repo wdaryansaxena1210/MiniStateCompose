@@ -55,7 +55,7 @@ class EventListFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = EventListAdapter(emptyList()) // Initially empty list
+        adapter = EventListAdapter(emptyList(), fragmentManager = parentFragmentManager) // Initially empty list
         binding.rvEvents.layoutManager = LinearLayoutManager(requireContext())
         binding.rvEvents.adapter = adapter
     }

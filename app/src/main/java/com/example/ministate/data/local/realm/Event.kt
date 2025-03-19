@@ -13,4 +13,6 @@ class Event : RealmObject {
     var shortDesc: String = ""
     var subject : String = ""
     var phone : String = ""
+
+
 }
