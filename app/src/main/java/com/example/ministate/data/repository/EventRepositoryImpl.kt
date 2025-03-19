@@ -1,4 +1,4 @@
-package com.example.ministate.data.remote.repository
+package com.example.ministate.data.repository
 
 import android.content.Context
 import com.android.volley.Request
@@ -177,16 +177,25 @@ class EventRepositoryImpl(context: Context) : EventRepository {
 //            .forEach { println(" Event Category asdasdasdasd ${it.id}") }
     }
 
-    suspend fun getEventCatagoriesFlowProducer(): Flow<ResultsChange<EventCategory>> {
+    override fun getEventCategoriesFlowProducer(): Flow<ResultsChange<EventCategory>> {
         return realm.query<EventCategory>().asFlow()
     }
 
-    fun getEventDetailsListFlowProducer(): Flow<ResultsChange<Event>> {
+    override fun getEventDetailsListFlowProducer(): Flow<ResultsChange<Event>> {
         return realm.query<Event>().asFlow()
     }
 
-    fun deleteAll(){
+    override fun deleteAll(){
         realm.writeBlocking { deleteAll() }
+    }
+
+    override fun getEventById(eventId: String?): Event? {
+        println("getting id $eventId")
+        return realm.query<Event>("id=$0", eventId).find().firstOrNull()
+    }
+
+    override fun getEventCategoryById(id : String): String {
+        return realm.query<EventCategory>("id=$0", id).find().firstOrNull()?.short_title ?:"title"
     }
 }
 
