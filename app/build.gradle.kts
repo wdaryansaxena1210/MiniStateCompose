@@ -8,6 +8,11 @@ plugins {
 }
 
 android {
+
+    viewBinding {
+        enable=true
+    }
+
     namespace = "com.example.ministate"
     compileSdk = 35
 
@@ -54,6 +59,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.runtime.android)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

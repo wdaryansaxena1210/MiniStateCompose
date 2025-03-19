@@ -1,4 +1,4 @@
-package com.example.ministate.presentation.ui.theme
+package com.example.ministate.presentation.common
 
 import com.example.ministate.data.local.realm.Event
 import com.example.ministate.data.local.realm.EventCategory

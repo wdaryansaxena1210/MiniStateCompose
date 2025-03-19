@@ -1,4 +1,4 @@
-package com.example.ministate.presentation
+package com.example.ministate.presentation.compose
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

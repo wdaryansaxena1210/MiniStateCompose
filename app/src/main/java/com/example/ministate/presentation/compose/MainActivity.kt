@@ -1,4 +1,4 @@
-package com.example.ministate.presentation
+package com.example.ministate.presentation.compose
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.ministate.presentation.common.EventViewModel
 import com.example.ministate.presentation.ui.theme.MiniStateTheme
 
 class MainActivity : ComponentActivity() {

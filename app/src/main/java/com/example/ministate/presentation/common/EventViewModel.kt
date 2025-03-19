@@ -1,4 +1,4 @@
-package com.example.ministate.presentation
+package com.example.ministate.presentation.common
 
 import android.app.Application
 import androidx.compose.runtime.MutableState
@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.ministate.data.local.realm.Event
 import com.example.ministate.data.local.realm.EventCategory
 import com.example.ministate.data.repository.EventRepositoryImpl
-import com.example.ministate.presentation.ui.theme.EventState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
