@@ -59,7 +59,7 @@ class CategoryListFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = CategoryListAdapter(categoryList)
+        adapter = CategoryListAdapter(categoryList, parentFragmentManager)
         binding.rvCategoryList.layoutManager = LinearLayoutManager(requireContext())
         binding.rvCategoryList.adapter = adapter
     }

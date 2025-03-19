@@ -22,6 +22,7 @@ class MainActivityXml : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, CategoryListFragment())
+                .addToBackStack(null)
                 .commit()
         }
 
