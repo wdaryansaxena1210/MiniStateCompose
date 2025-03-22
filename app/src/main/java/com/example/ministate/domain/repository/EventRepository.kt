@@ -8,10 +8,10 @@ import io.realm.kotlin.notifications.ResultsChange
 import kotlinx.coroutines.flow.Flow
 
 interface EventRepository {
-    suspend fun loadEventCatagories()
+    suspend fun loadEventCategories()
     suspend fun loadEventDetailsList()
     suspend fun storeEventDetails(eventDetailsList: EventDetailsList)
-    suspend fun storeEventCatagories(eventCatagoryList: EventCategoryList)
+    suspend fun storeEventCategories(eventCategoryList: EventCategoryList)
     fun getEventCategoriesFlowProducer(): Flow<ResultsChange<EventCategory>>
     fun getEventCategoryById(id: String): String
     fun getEventById(eventId: String?): Event?

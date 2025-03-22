@@ -19,7 +19,7 @@ class EventViewModel(application: Application) : AndroidViewModel(application) {
 
 
     //Dependencies
-    private val eventRepository = EventRepositoryImpl(application)
+        private val eventRepository = EventRepositoryImpl(application)
 
     private val _state = MutableStateFlow(EventState())
     val state = _state.asStateFlow()
@@ -33,7 +33,7 @@ class EventViewModel(application: Application) : AndroidViewModel(application) {
             var eventList: List<Event>? = null
 
             withContext(Dispatchers.IO) {
-                eventRepository.loadEventCatagories()
+                eventRepository.loadEventCategories()
                 eventRepository.loadEventDetailsList()
             }
 
@@ -71,7 +71,7 @@ class EventViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             eventRepository.deleteAll()
             withContext(Dispatchers.IO){
-                eventRepository.loadEventCatagories()
+                eventRepository.loadEventCategories()
                 eventRepository.loadEventDetailsList()
                 toggleIsRefreshing()
             }

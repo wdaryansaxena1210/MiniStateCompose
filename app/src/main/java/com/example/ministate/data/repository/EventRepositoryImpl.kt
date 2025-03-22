@@ -19,6 +19,7 @@ import com.example.ministate.domain.repository.EventRepository
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.ext.query
+import io.realm.kotlin.migration.RealmMigration
 import io.realm.kotlin.notifications.ResultsChange
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,11 +29,19 @@ import kotlinx.coroutines.launch
 class EventRepositoryImpl(context: Context) : EventRepository {
 
     val queue = Volley.newRequestQueue(context)
+
+
     val configuration =
-        RealmConfiguration.create(schema = setOf(Event::class, EventCategory::class))
+//        RealmConfiguration.create(schema = setOf(Event::class, EventCategory::class))
+          RealmConfiguration
+              .Builder(schema = setOf(Event::class, EventCategory::class))
+              .schemaVersion(2)
+              .build()
+
+
     val realm = Realm.open(configuration)
 
-    override suspend fun loadEventCatagories() {
+    override suspend fun loadEventCategories() {
 
         val url = "https://www.event.iastate.edu/api/events/?key=8aa084537a2184f6179c&categories=-1"
         val request = JsonArrayRequest(
@@ -70,7 +79,7 @@ class EventRepositoryImpl(context: Context) : EventRepository {
 
                 //commit to realm
                 CoroutineScope(Dispatchers.IO).launch {
-                    storeEventCatagories(eventCategoryList)
+                    storeEventCategories(eventCategoryList)
                 }
 
             },
@@ -157,15 +166,16 @@ class EventRepositoryImpl(context: Context) : EventRepository {
                     location = it.location
                     phone = it.phone
                     cost = it.cost
+                    eventDate = it.eventDate
                 })
             }
         }
 //        realm.query<Event>().find().forEach{println("Event asdasdasdasd ${it.id}")}
     }
 
-    override suspend fun storeEventCatagories(eventCatagoryList: EventCategoryList) {
+    override suspend fun storeEventCategories(eventCategoryList: EventCategoryList) {
         realm.writeBlocking {
-            eventCatagoryList.forEach {
+            eventCategoryList.forEach {
                 copyToRealm(EventCategory().apply {
                     id = it.id
                     long_title = it.long_title
@@ -198,4 +208,3 @@ class EventRepositoryImpl(context: Context) : EventRepository {
         return realm.query<EventCategory>("id=$0", id).find().firstOrNull()?.short_title ?:"title"
     }
 }
-

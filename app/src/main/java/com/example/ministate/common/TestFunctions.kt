@@ -7,7 +7,7 @@ class TestFunctions(val context: Context) {
 
     suspend fun testEventRepositoryGetEventCatagories(){
         val eventRepository = EventRepositoryImpl(context)
-        eventRepository.loadEventCatagories()
+        eventRepository.loadEventCategories()
     }
 
     suspend fun testEventRepositoryGetEventDetailsList(){

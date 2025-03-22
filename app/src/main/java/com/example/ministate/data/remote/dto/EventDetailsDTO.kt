@@ -27,6 +27,7 @@ fun EventDetailsDTO.toEventDetails() : EventDetails{
         location = location,
         shortDesc = shortDesc,
         subject = subject,
-        phone = phone
+        phone = phone,
+        eventDate = eventDate
     )
 }

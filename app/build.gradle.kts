@@ -81,4 +81,7 @@ dependencies {
 
 //    volley
     implementation("com.android.volley:volley:1.2.1")
+
+    //icons
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 }
