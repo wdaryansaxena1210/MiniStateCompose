@@ -17,6 +17,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -28,14 +32,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ministate.data.local.realm.Event
+import com.example.ministate.data.local.realm.EventCategory
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -45,12 +52,20 @@ import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EventListCloneScreen(modifier: Modifier = Modifier, events: List<Event>?) {
-    val groupedEvents: Map<LocalDate, List<Event>>
+fun EventListCloneScreen(
+    modifier: Modifier = Modifier,
+    eventList: List<Event>?,
+    eventCategories : List<EventCategory>?,
+    onEventClick : (id : String) -> Unit
+    ) {
+
+    var eventListToDisplay by remember(eventList) { mutableStateOf(eventList) }
+
+    println("events is $eventListToDisplay")
 
     //if this composable is called when events is null, don't even bother going thru the rest of the code
     //just show loading and return
-    if(events==null){
+    if(eventListToDisplay==null){
         Text("Loading...")
         return
         //NOTE : just because we returned DOESN'T mean that "Loading" text is NOT shown
@@ -60,21 +75,26 @@ fun EventListCloneScreen(modifier: Modifier = Modifier, events: List<Event>?) {
         //take the return statement above the Text Composable and no screen alteration would happen, we would just return
     }
 
-        groupedEvents = remember(events) { groupEventsByDate(events) }
 //        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 //        val date = LocalDate.parse("2025-03-23", formatter)
 //        Log.d("GROUPED EVENTS", groupedEvents[LocalDate.parse("2025-03-23", DateTimeFormatter.ofPattern("yyyy-MM-dd"))].toString())
 
 
-
     Scaffold(
-        topBar = { TopBarComposable() }
+        topBar = { TopBarComposable(
+            categories = eventCategories,
+            eventsToDisplay = eventListToDisplay!!,
+            completeEventList = eventList,
+            onCategorySelected = { categoryId ->
+                eventListToDisplay = eventList?.filter { it.category.contains(categoryId)}}
+        ) }
     ) {
         Column (
             modifier = Modifier.padding(it)
         ){
             EventsList(
-                events = events,
+                events = eventListToDisplay!!,
+                onClick = onEventClick
             )
         }
 
@@ -108,9 +128,30 @@ fun formatDateHeader(date: LocalDate): String {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
-fun TopBarComposable(modifier: Modifier = Modifier.padding(2.dp)) {
+fun TopBarComposable(
+    modifier: Modifier = Modifier.padding(2.dp),
+    categories: List<EventCategory>?,
+    eventsToDisplay: List<Event>,
+    onCategorySelected: (categoryId: String) -> Unit,
+    completeEventList: List<Event>?,
+) {
+
+//    fun onCategoryClick(id : String){
+//        events = events.filter { it.category.contains(id) }
+//        println(id)
+//        events.forEach{
+//            println("now events : ${ it.category }")
+//        }
+//    }
+
+    // State for managing dropdown visibility
+    var isCategoriesDropdownExpanded by remember { mutableStateOf(false) }
+    // State for currently selected category
+    var selectedCategory by remember { mutableStateOf("All") }
+
+
+
     TopAppBar(
         title = {
             Text(
@@ -128,12 +169,33 @@ fun TopBarComposable(modifier: Modifier = Modifier.padding(2.dp)) {
             }
         },
         actions = {
-            Text(
-                text = "CATEGORIES",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(end = 16.dp)
-            )
+
+            Button(
+                modifier = Modifier,
+                onClick ={isCategoriesDropdownExpanded = !isCategoriesDropdownExpanded},
+                colors = ButtonDefaults.textButtonColors(containerColor = Color.Transparent)
+            ) {
+                Text(
+                    text = "CATEGORIES",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                )
+
+            }
+
+            DropdownMenu(
+                expanded = isCategoriesDropdownExpanded,
+                onDismissRequest = {isCategoriesDropdownExpanded = false}
+            ) {
+                categories?.forEach{ it ->
+                    println("making category + ${it.short_title}")
+                    DropdownMenuItem(
+                        text = {Text(it.short_title)},
+                        onClick = {onCategorySelected(it.id)}
+                    )
+                }
+            }
+
             IconButton(onClick = { /* Handle calendar click */ }) {
                 Icon(
                     imageVector = Icons.Default.CalendarMonth,
@@ -159,14 +221,14 @@ fun DateHeader(date: LocalDate, modifier: Modifier = Modifier) {
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .padding(4.dp),
         style = MaterialTheme.typography.headlineSmall,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
     )
 }
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EventItem(event: Event, modifier: Modifier = Modifier) {
+fun EventItem(event: Event, modifier: Modifier = Modifier, onClick: (String) -> Unit) {
     val (_, time) = parseEventDate(event.eventDate)
 
     Row(
@@ -174,7 +236,7 @@ fun EventItem(event: Event, modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable {
-                /*navigation logic here*/
+                onClick("event_details_clone_screen/${event.id}")
             },
     ) {
         // Time box on the left
@@ -220,7 +282,7 @@ fun EventItem(event: Event, modifier: Modifier = Modifier) {
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EventsList(events: List<Event>, modifier: Modifier = Modifier) {
+fun EventsList(events: List<Event>, modifier: Modifier = Modifier, onClick : (String)-> Unit) {
     val groupedEvents = remember(events) { groupEventsByDate(events) }
 
     LazyColumn(
@@ -233,7 +295,10 @@ fun EventsList(events: List<Event>, modifier: Modifier = Modifier) {
             }
 
             items(eventsForDate) { event ->
-                EventItem(event)
+                EventItem(
+                    event = event,
+                    onClick = onClick,
+                )
             }
         }
     }
