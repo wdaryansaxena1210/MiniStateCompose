@@ -11,4 +11,5 @@ data class EventDetails(
     val shortDesc: String,
     val subject : String,
     val phone : String,
+    val eventDate : String
 )
